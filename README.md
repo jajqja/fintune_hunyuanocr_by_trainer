@@ -29,7 +29,7 @@ data/
   labels.txt       ← format: "img_001.jpg\tground truth text"
 ```
 
-Option 2: labels.json
+**Option 2**: labels.json
 Supports both dictionary and list formats.
 ```
 data/
