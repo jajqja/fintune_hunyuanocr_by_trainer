@@ -5,7 +5,7 @@
 The system automatically detects your data if it follows one of these three structures:
 
 ### Structure A: Image + TXT Pairs
-Place a .txt file with the exact same name as the image in the same directory.
+Place a `.txt` file with the exact same name as the image in the same directory.
 
 ```
 data/
@@ -18,8 +18,8 @@ data/
 ### Structure B: Centralized Labels
 A single file mapping filenames to their ground truth.
 
-**Option 1**: labels.txt or gt.txt
-Format: filename <TAB> ground_truth or filename <COMMA> ground_truth.
+**Option 1**: `labels.txt` or `gt.txt`
+Format: filename `<TAB>` ground_truth.
 
 ```
 data/
@@ -29,7 +29,7 @@ data/
   labels.txt       ← format: "img_001.jpg\tground truth text"
 ```
 
-**Option 2**: labels.json
+**Option 2**: `labels.json`
 Supports both dictionary and list formats.
 ```
 data/
@@ -58,6 +58,7 @@ data/
 
 ## Installation
 ```bash
+pip install accelerate
 pip install git+https://github.com/huggingface/transformers@82a06db03535c49aa987719ed0746a76093b1ec4
 ```
 
