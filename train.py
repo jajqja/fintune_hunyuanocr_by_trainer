@@ -10,6 +10,26 @@ from datasets import Dataset
 
 from dataloader import load_dataset
 
+def scale_image_limit(image: Image.Image, max_pixels: int = 3000000) -> Image.Image:
+    """
+    Scale ảnh sao cho tổng số pixel không vượt quá max_pixels mà vẫn giữ nguyên tỉ lệ.
+    """
+    width, height = image.size
+    current_pixels = width * height
+
+    if current_pixels <= max_pixels:
+        return image  # Ảnh đã nhỏ sẵn rồi, không cần scale
+
+    # Tính toán tỷ lệ scale dựa trên diện tích
+    # ratio = sqrt(max_pixels / current_pixels)
+    import math
+    ratio = math.sqrt(max_pixels / current_pixels)
+
+    new_width = int(width * ratio)
+    new_height = int(height * ratio)
+
+    # Sử dụng Resampling.LANCZOS để giữ chất lượng ảnh tốt nhất khi thu nhỏ
+    return image.resize((new_width, new_height), Image.Resampling.LANCZOS)
 
 def create_sft_collate_fn(processor):
     tokenizer = processor.tokenizer
@@ -35,7 +55,7 @@ def create_sft_collate_fn(processor):
                 continue
                 
             try:
-                image = [Image.open(image_path).convert("RGB")]
+                image = [scale_image_limit(Image.open(image_path).convert("RGB"))]
             except Exception as e:
                 print(f"Error: Can't open {image_path}: {e}")
                 continue
@@ -266,6 +286,7 @@ def main():
         train_dataset=train_dataset,
         eval_dataset=eval_dataset,
         data_collator=data_collator,
+        processing_class=processor,
     )
 
     print("--- Starting Training ---")
