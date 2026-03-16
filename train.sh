@@ -4,7 +4,7 @@ set -e
 
 # ==================== Configuration ====================
 MODEL_PATH="tencent/HunyuanOCR"
-DATA_PATH="data"
+DATA_PATH="data/"
 OUTPUT_DIR="HunYuanOCR-SFT"
 
 # Change to 1 if using Google Colab
@@ -12,10 +12,10 @@ NUM_GPUS=1
 
 # Training Hyperparameters
 EPOCHS=5                   
-BATCH_SIZE=2               
-GRAD_ACCUM_STEPS=4         
+BATCH_SIZE=4           
+GRAD_ACCUM_STEPS=8      
 LEARNING_RATE=2e-5
-MAX_LENGTH=3000            
+MAX_LENGTH=4096        
 
 # ==================== Environment Setup ====================
 echo "Setting up environment variables..."
