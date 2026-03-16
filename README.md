@@ -58,7 +58,7 @@ data/
 
 ## Installation
 ```bash
-pip install accelerate
+pip install accelerate trl
 pip install git+https://github.com/huggingface/transformers@82a06db03535c49aa987719ed0746a76093b1ec4
 ```
 
