@@ -104,6 +104,16 @@ def create_sft_collate_fn(processor):
                 labels[i, user_pos +1: assistant_pos + 1] = input_ids[i, user_pos +1: assistant_pos + 1] 
 
         data_dict["labels"] = labels
+        
+        ## It is debug
+        # non_ignore_count = (labels != -100).sum().item()
+        # print(f"DEBUG: Batch has {non_ignore_count} tokens to learn.")
+
+        # if non_ignore_count == 0:
+        #     print(f"CRITICAL WARNING: No labels found! Check token IDs.")
+        #     print(f"User ID: {user_id}, Assistant ID: {assistant_id}")
+        #     print(f"First 50 IDs in input: {input_ids[0][:50].tolist()}")
+        
         batch_size, seq_len = input_ids.shape
 
         x_dim = 4
