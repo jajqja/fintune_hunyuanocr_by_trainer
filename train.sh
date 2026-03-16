@@ -27,6 +27,7 @@ export PYTORCH_CUDA_ALLOC_CONF=max_split_size_mb:512
 echo "Starting Training..."
 
 accelerate launch \
+    --config_file /root/.cache/huggingface/accelerate/default_config.yaml \
     --num_processes=$NUM_GPUS \
     --num_machines=1 \
     --mixed_precision=bf16 \
