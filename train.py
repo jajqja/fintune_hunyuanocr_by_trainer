@@ -274,13 +274,16 @@ def main():
         gradient_checkpointing_kwargs={"use_reentrant": False}, 
         max_length=args.max_length,
         dataset_text_field=None, 
-        optim="adamw_torch_fused",  
+        optim="adamw_torch_fused",
+        weight_decay=0.01,
         learning_rate=args.learning_rate,  
         
         logging_steps=args.logging_steps, 
         eval_strategy="epoch",  
         save_strategy="epoch",
         save_total_limit=1,
+        load_best_model_at_end=True,
+        metric_for_best_model="eval_loss",
         
         bf16=True,   
         warmup_ratio=0.1,  
