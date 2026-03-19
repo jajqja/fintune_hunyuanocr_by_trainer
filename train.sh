@@ -5,7 +5,7 @@ set -e
 # ==================== Configuration ====================
 MODEL_PATH="tencent/HunyuanOCR"
 DATA_PATH="data/"
-OUTPUT_DIR="HunYuanOCR-SFT"
+OUTPUT_DIR="HunYuanOCR-VNCLUR"
 
 # Change to 1 if using Google Colab
 NUM_GPUS=1  
