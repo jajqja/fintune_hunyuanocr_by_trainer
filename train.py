@@ -205,7 +205,7 @@ def parse_args():
     parser.add_argument("--per_device_eval_batch_size", type=int, default=4)
     parser.add_argument("--gradient_accumulation_steps", type=int, default=8)
     parser.add_argument("--learning_rate", type=float, default=1e-5)
-    parser.add_argument("--max_length", type=int, default=4096) # Ưu tiên set cụ thể cho OCR
+    parser.add_argument("--max_length", type=int, default=None) # Ưu tiên set cụ thể cho OCR
     parser.add_argument("--logging_steps", type=int, default=10)
 
     # Distributed settings
