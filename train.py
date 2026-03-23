@@ -1,6 +1,7 @@
 import torch
 from transformers import AutoProcessor
-from transformers import HunYuanVLForConditionalGeneration
+# from transformers import HunYuanVLForConditionalGeneration
+from custom_model import MyCustomHunYuanVL
 from trl import SFTConfig, SFTTrainer
 import json
 from PIL import Image
@@ -11,9 +12,9 @@ from datasets import Dataset
 from dataloader import load_dataset
 
 # Prompt
-PROMPT = "Extract all main content of the image of the Vietnam Certificate of Land Use Rights. Tables should be expressed in Markdown format. Ensure the parsing follows the logical reading order. Replace the land-plot diagram with [Sơ đồ], seal with [Con dấu] and signature with [Chữ ký]."
+PROMPT = "Extract all text from main body of the image of the Vietnam Certificate of Land Use Rights. Tables should be expressed in Markdown format. Ensure the parsing follows the logical reading order. Replace the land-plot diagram with [Sơ đồ], seal with [Con dấu] and signature with [Chữ ký]."
 
-def scale_image_limit(image: Image.Image, max_pixels: int = 3000000) -> Image.Image:
+def scale_image_limit(image: Image.Image, max_pixels: int = 2800000) -> Image.Image:
     """
     Scale ảnh sao cho tổng số pixel không vượt quá max_pixels mà vẫn giữ nguyên tỉ lệ.
     """
@@ -58,7 +59,6 @@ def create_sft_collate_fn(processor):
                 continue
                 
             try:
-                # Scale image to avoid OOM, but keep the aspect ratio
                 image = [scale_image_limit(Image.open(image_path)).convert("RGB")]
             except Exception as e:
                 print(f"Error: Can't open {image_path}: {e}")
@@ -228,7 +228,7 @@ def main():
     print(f"Loading model: {args.model_name_or_path}")
     processor = AutoProcessor.from_pretrained(args.model_name_or_path, use_fast=False)
     
-    model = HunYuanVLForConditionalGeneration.from_pretrained(
+    model = MyCustomHunYuanVL.from_pretrained(
         args.model_name_or_path,
         attn_implementation="eager", 
         torch_dtype=torch.bfloat16,
