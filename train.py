@@ -14,7 +14,7 @@ from utils.dataloader import load_dataset
 # Prompt
 PROMPT = "Extract all text from main body of the image of the Vietnam Certificate of Land Use Rights. Tables should be expressed in Markdown format. Ensure the parsing follows the logical reading order. Replace the land-plot diagram with [Sơ đồ], seal with [Con dấu] and signature with [Chữ ký]."
 
-def scale_image_limit(image: Image.Image, max_pixels: int = 2800000) -> Image.Image:
+def scale_image_limit(image: Image.Image, max_pixels: int = 2000000) -> Image.Image:
     """
     Scale ảnh sao cho tổng số pixel không vượt quá max_pixels mà vẫn giữ nguyên tỉ lệ.
     """
@@ -106,7 +106,7 @@ def create_sft_collate_fn(processor):
         batch_size, seq_len = input_ids.shape
 
         x_dim = 4
-        position_ids = torch.arange(seq_len, device=input_ids.device , dtype=torch.long).unsqueeze(0).unsqueeze(0).repeat(batch_size, x_dim,1)
+        position_ids = torch.arange(seq_len, device=input_ids.device , dtype=torch.long).unsqueeze(0).unsqueeze(0).repeat(batch_size, x_dim, 1)
         data_dict["position_ids"] = position_ids
 
         if len(batch_pixel_values) > 0:
@@ -151,7 +151,7 @@ def load_ocr_datasets(data_path):
     full_ds = Dataset.from_list(data_list)
     
     # Chia train/test (ví dụ 90/10)
-    ds_split = full_ds.train_test_split(test_size=0.1, shuffle=True, seed=42)
+    ds_split = full_ds.train_test_split(test_size=0.2, shuffle=True, seed=42)
     ds_train, ds_test = ds_split["train"], ds_split["test"]
     column_names = ds_train.column_names
 
@@ -205,7 +205,6 @@ def parse_args():
     parser.add_argument("--per_device_eval_batch_size", type=int, default=4)
     parser.add_argument("--gradient_accumulation_steps", type=int, default=8)
     parser.add_argument("--learning_rate", type=float, default=1e-5)
-    parser.add_argument("--max_length", type=int, default=None) # Ưu tiên set cụ thể cho OCR
     parser.add_argument("--logging_steps", type=int, default=10)
 
     # Distributed settings
@@ -230,7 +229,7 @@ def main():
     
     model = MyCustomHunYuanVL.from_pretrained(
         args.model_name_or_path,
-        attn_implementation="eager", 
+        attn_implementation="sdpa", 
         torch_dtype=torch.bfloat16,
     ).to(device)
 
@@ -260,7 +259,7 @@ def main():
         remove_unused_columns=False, 
         gradient_checkpointing=True,
         gradient_checkpointing_kwargs={"use_reentrant": False}, 
-        max_length=args.max_length,
+        max_length=None,
         dataset_text_field=None, 
         optim="adamw_torch_fused",
         weight_decay=0.01,
