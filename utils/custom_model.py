@@ -1,7 +1,6 @@
 import torch
-import torch.nn as nn
 from typing import Optional, Union, List
-from transformers import HunYuanVLForConditionalGeneration, HunYuanVLModel
+from transformers import HunYuanVLForConditionalGeneration
 from transformers.modeling_outputs import CausalLMOutputWithPast
 
 class MyCustomHunYuanVL(HunYuanVLForConditionalGeneration):
@@ -23,10 +22,12 @@ class MyCustomHunYuanVL(HunYuanVLForConditionalGeneration):
         
         # 1. Nếu chưa có inputs_embeds, ta tạo nó từ input_ids
         if inputs_embeds is None and input_ids is not None:
+            print("Creating input embeddings from input_ids...")
             inputs_embeds = self.model.embed_tokens(input_ids).clone()
 
         # 2. Xử lý Hình ảnh (Logic được mang từ generate sang)
         if pixel_values is not None and self.vit is not None:
+            print("Processing image inputs...")
             # Đảm bảo cùng kiểu dữ liệu với model (thường là bfloat16)
             pixel_values = pixel_values.to(self.dtype)
             image_embeds = self.vit(pixel_values, image_grid_thw)
@@ -62,7 +63,7 @@ class MyCustomHunYuanVL(HunYuanVLForConditionalGeneration):
         # 4. Tính toán Loss (Rất quan trọng cho Trainer)
         loss = None
         if labels is not None:
-            # Shift logits và labels để học dự đoán token tiếp theo
+            print("Calculating loss...")
             loss = self.loss_function(
                 logits=logits, 
                 labels=labels, 
