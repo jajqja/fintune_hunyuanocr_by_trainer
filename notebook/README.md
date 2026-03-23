@@ -1,3 +1,3 @@
-# NOTEBOOK FOR ANALYZING AND FINETUNING BY TRAINER HUNYUANOCR
+# NOTEBOOK FOR ANALYZING AND FINETUNING HUNYUANOCR
 
-I use google colab for notebooks in this folder
+A comprehensive guide and implementation for fine-tuning the HunYuan-VL (OCR version) model on a specialized dataset of Vietnamese Land Use Rights Certificates (Sổ đỏ). This notebook is fully optimized for execution within the Google Colab environment.
