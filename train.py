@@ -1,7 +1,7 @@
 import torch
 from transformers import AutoProcessor
 # from transformers import HunYuanVLForConditionalGeneration
-from custom_model import MyCustomHunYuanVL
+from utils.custom_model import MyCustomHunYuanVL
 from trl import SFTConfig, SFTTrainer
 import json
 from PIL import Image
@@ -9,7 +9,7 @@ import os
 import argparse
 from datasets import Dataset
 
-from dataloader import load_dataset
+from utils.dataloader import load_dataset
 
 # Prompt
 PROMPT = "Extract all text from main body of the image of the Vietnam Certificate of Land Use Rights. Tables should be expressed in Markdown format. Ensure the parsing follows the logical reading order. Replace the land-plot diagram with [Sơ đồ], seal with [Con dấu] and signature with [Chữ ký]."
