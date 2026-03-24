@@ -39,7 +39,6 @@ accelerate launch \
     --per_device_train_batch_size "$BATCH_SIZE" \
     --gradient_accumulation_steps "$GRAD_ACCUM_STEPS" \
     --learning_rate "$LEARNING_RATE" \
-    --max_length "$MAX_LENGTH" \
     --logging_steps 10 \
 
 echo "Training Completed!"
