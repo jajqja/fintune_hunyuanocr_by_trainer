@@ -12,9 +12,9 @@ NUM_GPUS=1
 
 # Training Hyperparameters
 EPOCHS=10               
-BATCH_SIZE=4           
+BATCH_SIZE=2           
 GRAD_ACCUM_STEPS=4      
-LEARNING_RATE=1e-5
+LEARNING_RATE=2e-5
 MAX_LENGTH=None        
 
 # ==================== Environment Setup ====================
