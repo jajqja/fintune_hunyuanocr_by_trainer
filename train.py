@@ -3,6 +3,7 @@ from transformers import AutoProcessor
 # from transformers import HunYuanVLForConditionalGeneration
 from utils.custom_model import MyCustomHunYuanVL
 from trl import SFTConfig, SFTTrainer
+from peft import LoraConfig, get_peft_model
 import json
 from PIL import Image
 import os 
