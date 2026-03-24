@@ -233,14 +233,31 @@ def main():
         torch_dtype=torch.bfloat16,
     ).to(device)
 
-    # Distributed Data Parallel
-    if args.local_rank != -1:
-        model = torch.nn.parallel.DistributedDataParallel(
-            model, 
-            device_ids=[args.local_rank],
-            output_device=args.local_rank,
-            find_unused_parameters=args.ddp_find_unused_parameters
-        )
+    # Đóng băng ViT
+    model.vit.requires_grad_(False)
+    model.vit.eval()
+
+    # Cấu hình LoRA cho LLM
+    peft_config = LoraConfig(
+        r=16,
+        lora_alpha=32,
+        target_modules=["q_proj", "v_proj", "k_proj", "o_proj", "gate_proj", "up_proj", "down_proj"],
+        lora_dropout=0.05,
+        bias="none",
+        task_type="CAUSAL_LM"
+    )
+
+    model = get_peft_model(model, peft_config)
+    model.print_trainable_parameters()
+
+    ## Distributed Data Parallel
+    # if args.local_rank != -1:
+    #     model = torch.nn.parallel.DistributedDataParallel(
+    #         model, 
+    #         device_ids=[args.local_rank],
+    #         output_device=args.local_rank,
+    #         find_unused_parameters=args.ddp_find_unused_parameters
+    #     )
     
     # Load Dataset
     print("Loading dataset...")
