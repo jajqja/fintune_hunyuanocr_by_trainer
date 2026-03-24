@@ -11,10 +11,10 @@ OUTPUT_DIR="HunYuanOCR-VNCLUR"
 NUM_GPUS=1  
 
 # Training Hyperparameters
-EPOCHS=10               
+EPOCHS=15               
 BATCH_SIZE=2           
 GRAD_ACCUM_STEPS=4      
-LEARNING_RATE=2e-5
+LEARNING_RATE=2e-4
 MAX_LENGTH=None        
 
 # ==================== Environment Setup ====================
