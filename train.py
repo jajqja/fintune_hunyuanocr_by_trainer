@@ -181,7 +181,7 @@ def load_ocr_datasets(data_path, prompts_file):
     print(json.dumps(ds_train[0], indent=3, ensure_ascii=False))
     print("\n---\n")
     print("First sample from the test dataset:\n")
-    print(json.dumps(ds_test[0], indent=4, ensure_ascii=False))
+    print(json.dumps(ds_test[0], indent=3, ensure_ascii=False))
 
     return ds_train, ds_test
 
