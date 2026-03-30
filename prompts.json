@@ -1,0 +1,7 @@
+{
+    "GCN": "Extract all information from the main body of a Vietnam Certificate of Land Use Rights image (Giấy chứng nhận quyền sử dụng đất của Việt Nam). Present any tables in Markdown format. Replace non-text elements such as land plot diagrams, seals, signatures, or images with [short descriptions in Vietnamese enclosed in brackets]. Ensure the parsing is accurate, preserves the original meaning, and is organized clearly following the natural reading order of the document.",
+    "hoso": "Extract all information from the main body of the Vietnam legal document image. Replace the seal and signature with [short descriptions in Vietnamese enclosed in brackets] such as [Con dấu], [Chữ ký] or [Con dấu và chữ ký]. The parsing should be organized according to the reading order.",
+    "diachi": "Extract the handwritten Vietnamese text in the image.",
+    "luat_su_dung_dat": "This is one of the image pages in Vietnam's regulations on land use right certificates. Extract all main content exactly, tables should be expressed in Markdown format, non-text elements such as diagrams, seals, and signatures should be replaced with [short descriptions in Vietnamese enclosed in brackets]. The parsing should be organized according to the reading order.",
+    "default": "Extract the text in the image."
+}

@@ -6,6 +6,7 @@ set -e
 MODEL_PATH="tencent/HunyuanOCR"
 DATA_PATH="data/"
 OUTPUT_DIR="HunYuanOCR-VNCLUR"
+PROMPTS_FILE="prompts.json"  # JSON file mapping folder names to prompts
 
 # Change to 1 if using Google Colab
 NUM_GPUS=1  
@@ -34,6 +35,7 @@ accelerate launch \
     train.py \
     --model_name_or_path "$MODEL_PATH" \
     --data_path "$DATA_PATH" \
+    --prompts_file "$PROMPTS_FILE" \
     --output_dir "$OUTPUT_DIR" \
     --num_train_epochs "$EPOCHS" \
     --per_device_train_batch_size "$BATCH_SIZE" \

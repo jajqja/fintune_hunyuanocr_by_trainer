@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 from typing import Optional
 
-def load_dataset(dataset_dir: str) -> list[dict]:
+def load_dataset(dataset_dir: str, prompt) -> list[dict]:
     dataset_dir = Path(dataset_dir)
     if not dataset_dir.exists():
         raise FileNotFoundError(f"Dataset directory not found: {dataset_dir}")
@@ -13,9 +13,11 @@ def load_dataset(dataset_dir: str) -> list[dict]:
     for label_file in ["labels.json", "labels.txt", "gt.txt", "annotation.txt"]:
         label_path = dataset_dir / label_file
         if label_path.exists():
-            samples = _load_from_label_file(label_path, dataset_dir, image_exts)
+            samples = _load_from_label_file(label_path, dataset_dir, image_exts, prompt)
             if samples:
-                print(f"[Dataset] Loaded {len(samples)} samples from '{label_file}'")
+                print(f"[Dataset] From: {dataset_dir}")
+                print(f"\t- Found {len(samples)} samples from '{label_file}'")
+                print(f"\t- Using prompt: {prompt}")
                 return samples
 
     for img_path in sorted(dataset_dir.rglob("*")):
@@ -26,7 +28,8 @@ def load_dataset(dataset_dir: str) -> list[dict]:
             gt = txt_path.read_text(encoding="utf-8").strip()
             samples.append({
                 "image_path": str(img_path),
-                "ground_truth": gt,            
+                "ground_truth": gt,
+                "prompt": prompt,       
             })
 
     if not samples:
@@ -34,15 +37,17 @@ def load_dataset(dataset_dir: str) -> list[dict]:
             f"No valid samples found in '{dataset_dir}'.\n"
             "See README.md for instructions on preparing the dataset."
         )
-
-    print(f"[Dataset] Loaded {len(samples)} samples (image+txt pairs)")
+    print(f"[Dataset] From: {dataset_dir}")
+    print(f"\t- Found {len(samples)} samples (image+txt pairs)")
+    print(f"\t- Using prompt: {prompt}")
     return samples
 
 
 def _load_from_label_file(
     label_path: Path, 
     root: Path, 
-    image_exts: set
+    image_exts: set,
+    prompt: Optional[str] = None,
 ) -> list[dict]:
     
     samples = []
@@ -63,6 +68,7 @@ def _load_from_label_file(
                 samples.append({
                     "image_path": str(img_path),
                     "ground_truth": str(gt),
+                    "prompt": prompt,
                 })
 
     else:  
@@ -84,6 +90,7 @@ def _load_from_label_file(
                         samples.append({
                             "image_path": str(img_path),
                             "ground_truth": gt.strip(),
+                            "prompt": prompt,
                         })
     return samples
 

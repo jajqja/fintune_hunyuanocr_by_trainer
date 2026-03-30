@@ -12,21 +12,13 @@ from datasets import Dataset
 
 from utils.dataloader import load_dataset
 
-# Prompt
-PROMPT = "Extract all text from main body of the image of the Vietnam Certificate of Land Use Rights. Tables should be expressed in Markdown format. Ensure the parsing follows the logical reading order. Replace the land-plot diagram with [Sơ đồ], seal with [Con dấu] and signature with [Chữ ký]."
-
 def scale_image_limit(image: Image.Image, max_pixels: int = 2000000) -> Image.Image:
-    """
-    Scale ảnh sao cho tổng số pixel không vượt quá max_pixels mà vẫn giữ nguyên tỉ lệ.
-    """
     width, height = image.size
     current_pixels = width * height
 
     if current_pixels <= max_pixels:
-        return image  # Ảnh đã nhỏ sẵn rồi, không cần scale
-
-    # Tính toán tỷ lệ scale dựa trên diện tích
-    # ratio = sqrt(max_pixels / current_pixels)
+        return image  
+    
     import math
     ratio = math.sqrt(max_pixels / current_pixels)
 
@@ -143,16 +135,32 @@ def pad_cat_sequences(sequences, padding_side='right', padding_value=0):
 
     return outputs
 
+def load_ocr_datasets(data_path, prompts_file):
+    # data_path
+    # |-- folder1
+    # |-- folder2
+    # prompts.json -> {"folder1": "Prompt for folder1", "folder2": "Prompt for folder2", "default": "Default prompt if folder not in keys"}
+    # See README.md for preparing the folder dataset structure.
 
-def load_ocr_datasets(data_path):
-    #list[dict]
-    data_list = load_dataset(data_path)
-    
+    with open(prompts_file, 'r', encoding='utf-8') as f:
+        prompts_dict = json.load(f)
+
+    sub_folders = [f for f in os.listdir(data_path) if os.path.isdir(os.path.join(data_path, f))]
+
+    data_list = []
+
+    for folder in sub_folders:
+        folder_full_path = os.path.join(data_path, folder)
+        prompt = prompts_dict.get(folder, prompts_dict.get("default", ""))
+        data_list.extend(load_dataset(folder_full_path, prompt))
+
+    # data_list: list[dict] with keys: "image_path", "ground_truth", "prompt"
+
     # Tạo Hugging Face Dataset
     full_ds = Dataset.from_list(data_list)
     
     # Chia train/test (ví dụ 90/10)
-    ds_split = full_ds.train_test_split(test_size=0.2, shuffle=True, seed=42)
+    ds_split = full_ds.train_test_split(test_size=0.1, shuffle=True, seed=42)
     ds_train, ds_test = ds_split["train"], ds_split["test"]
     column_names = ds_train.column_names
 
@@ -167,7 +175,14 @@ def load_ocr_datasets(data_path):
         num_proc=4, 
         remove_columns=column_names
     )
-    
+
+    print(f"[Dataset] Train samples: {len(ds_train)}, Test samples: {len(ds_test)}")
+    print("First sample from the training dataset:\n")
+    print(json.dumps(ds_train[0], indent=3, ensure_ascii=False))
+    print("\n---\n")
+    print("First sample from the test dataset:\n")
+    print(json.dumps(ds_test[0], indent=4, ensure_ascii=False))
+
     return ds_train, ds_test
 
 def format_data(sample):
@@ -178,7 +193,7 @@ def format_data(sample):
             "role": "user",
             "content": [
                 {"type": "image", "image": image_path},
-                {"type": "text", "text": PROMPT},
+                {"type": "text", "text": sample['prompt']},
             ],
         },
         {
@@ -198,6 +213,7 @@ def parse_args():
     # Path settings
     parser.add_argument("--model_name_or_path", type=str, default="tencent/HunyuanOCR")
     parser.add_argument("--data_path", type=str, required=True, help="Path to the dataset directory")
+    parser.add_argument("--prompts_file", type=str, required=True, help="Path to the prompts JSON file")
     parser.add_argument("--output_dir", type=str, default="HunYuanOCR-SFT")
     
     # Training Hyperparameters
@@ -262,7 +278,8 @@ def main():
     
     # Load Dataset
     print("Loading dataset...")
-    train_dataset, eval_dataset = load_ocr_datasets(args.data_path)
+    train_dataset, eval_dataset = load_ocr_datasets(args.data_path, args.prompts_file)
+
     
     # Data collator
     data_collator = create_sft_collate_fn(processor)
