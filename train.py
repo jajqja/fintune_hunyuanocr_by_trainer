@@ -12,7 +12,7 @@ from datasets import Dataset
 
 from utils.dataloader import load_dataset
 
-def scale_image_limit(image: Image.Image, max_pixels: int = 2000000) -> Image.Image:
+def scale_image_limit(image: Image.Image, max_pixels: int = 1536*1536) -> Image.Image:
     width, height = image.size
     current_pixels = width * height
 
