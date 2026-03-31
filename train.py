@@ -160,30 +160,20 @@ def load_ocr_datasets(data_path, prompts_file):
     full_ds = Dataset.from_list(data_list)
     
     # Chia train/test (ví dụ 90/10)
-    ds_split = full_ds.train_test_split(test_size=0.1, shuffle=True, seed=42)
-    ds_train, ds_test = ds_split["train"], ds_split["test"]
-    column_names = ds_train.column_names
+    # ds_split = full_ds.train_test_split(test_size=0.1, shuffle=True, seed=42)
+    # ds_train, ds_test = ds_split["train"], ds_split["test"]
 
-    ds_train = ds_train.map(
+    ds = full_ds.map(
         format_data,
         num_proc=4, 
-        remove_columns=column_names
+        remove_columns=full_ds.column_names
     )
 
-    ds_test = ds_test.map(
-        format_data,
-        num_proc=4, 
-        remove_columns=column_names
-    )
-
-    print(f"[Dataset] Train samples: {len(ds_train)}, Test samples: {len(ds_test)}")
+    print(f"[Dataset] Number of samples: {len(ds)}")
     print("First sample from the training dataset:\n")
-    print(json.dumps(ds_train[0], indent=3, ensure_ascii=False))
-    print("\n---\n")
-    print("First sample from the test dataset:\n")
-    print(json.dumps(ds_test[0], indent=3, ensure_ascii=False))
+    print(json.dumps(ds[0], indent=3, ensure_ascii=False))
 
-    return ds_train, ds_test
+    return ds
 
 def format_data(sample):
     image_path = sample['image_path']
@@ -212,7 +202,8 @@ def parse_args():
     
     # Path settings
     parser.add_argument("--model_name_or_path", type=str, default="tencent/HunyuanOCR")
-    parser.add_argument("--data_path", type=str, required=True, help="Path to the dataset directory")
+    parser.add_argument("--data_train", type=str, required=True, help="Path to the training dataset directory")
+    parser.add_argument("--data_test", type=str, required=True, help="Path to the test dataset directory")
     parser.add_argument("--prompts_file", type=str, required=True, help="Path to the prompts JSON file")
     parser.add_argument("--output_dir", type=str, default="HunYuanOCR-SFT")
     
@@ -278,8 +269,9 @@ def main():
     
     # Load Dataset
     print("Loading dataset...")
-    train_dataset, eval_dataset = load_ocr_datasets(args.data_path, args.prompts_file)
-
+    train_dataset = load_ocr_datasets(args.data_train, args.prompts_file)
+    eval_dataset = load_ocr_datasets(args.data_test, args.prompts_file)
+    print(f"Training samples: {len(train_dataset)}, Evaluation samples: {len(eval_dataset)}")
     
     # Data collator
     data_collator = create_sft_collate_fn(processor)
@@ -303,9 +295,6 @@ def main():
         logging_steps=args.logging_steps, 
         eval_strategy="epoch",  
         save_strategy="epoch",
-        save_total_limit=1,
-        load_best_model_at_end=True,
-        metric_for_best_model="eval_loss",
         
         bf16=True,   
         warmup_ratio=0.1,  

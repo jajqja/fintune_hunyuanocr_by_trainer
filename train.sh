@@ -4,7 +4,8 @@ set -e
 
 # ==================== Configuration ====================
 MODEL_PATH="tencent/HunyuanOCR"
-DATA_PATH="data/"
+DATA_TRAIN="datatrain"
+DATA_TEST="datatest"
 OUTPUT_DIR="HunYuanOCR-VNCLUR"
 PROMPTS_FILE="prompts.json"  # JSON file mapping folder names to prompts
 
@@ -12,7 +13,7 @@ PROMPTS_FILE="prompts.json"  # JSON file mapping folder names to prompts
 NUM_GPUS=1  
 
 # Training Hyperparameters
-EPOCHS=15               
+EPOCHS=8               
 BATCH_SIZE=2           
 GRAD_ACCUM_STEPS=4      
 LEARNING_RATE=2e-4
@@ -34,7 +35,8 @@ accelerate launch \
     --mixed_precision=bf16 \
     train.py \
     --model_name_or_path "$MODEL_PATH" \
-    --data_path "$DATA_PATH" \
+    --data_train "$DATA_TRAIN" \
+    --data_test "$DATA_TEST" \
     --prompts_file "$PROMPTS_FILE" \
     --output_dir "$OUTPUT_DIR" \
     --num_train_epochs "$EPOCHS" \
