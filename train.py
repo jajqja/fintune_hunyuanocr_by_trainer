@@ -3,7 +3,7 @@ from transformers import AutoProcessor
 # from transformers import HunYuanVLForConditionalGeneration
 from utils.custom_model import MyCustomHunYuanVL
 from trl import SFTConfig, SFTTrainer
-from peft import LoraConfig, get_peft_model
+from peft import LoraConfig, get_peft_model, LoraRuntimeConfig
 import json
 from PIL import Image
 import os 
@@ -247,6 +247,8 @@ def main():
 
     # Cấu hình LoRA cho LLM
     peft_config = LoraConfig(
+        use_dora=True, 
+        runtime_config=LoraRuntimeConfig(ephemeral_gpu_offload=True),
         r=16,
         lora_alpha=32,
         target_modules=["q_proj", "v_proj", "k_proj", "o_proj", "gate_proj", "up_proj", "down_proj"],
